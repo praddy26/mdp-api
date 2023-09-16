@@ -52,7 +52,7 @@ jobs:
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
           SLACK_ICON: https://github.com/rtCamp.png?size=48
           SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.IMAGE_TAG}}-build-${{github.run_id}}-${{github.run_number}}'"
-          SLACK_TITLE: STARTED
+          SLACK_TITLE: Started
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -84,14 +84,14 @@ jobs:
       #   with:
       #     report_paths: 'reports/test/*.xml'
 
-      # - name: Upload Artifacts to S3 Bucket
-      #   uses: shallwefootball/s3-upload-action@master
-      #   with:
-      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
-      #     aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-      #     aws_bucket: ${{ secrets.AWS_BUCKET }}
-      #     destination_dir: ${{env.S3_UPLOAD_PATH}}
-      #     source_dir: 'dist'
+      - name: Upload Artifacts to S3 Bucket
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          destination_dir: ${{env.S3_UPLOAD_PATH}}
+          source_dir: 'dist'
 
       - name: Slack Notification for Success/Failure
         uses: rtCamp/action-slack-notify@v2
