@@ -45,18 +45,17 @@ jobs:
         with:
           format: YY[w]ww.d
           utcOffset: "+08:00"
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.AWS_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v1
       
-      - name: Print github repo
-        run: echo $GITHUB_REPOSITORY
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: general
+          # SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_MESSAGE: "Job: '${env.GITHUB_WORKFLOW}',VERSION: 'commit-${env.IMAGE_TAG}-build-${env.GITHUB_RUN_ID}'"
+          SLACK_TITLE: STARTED
+          SLACK_USERNAME: Github Actions
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
 
  
