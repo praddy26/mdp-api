@@ -21,7 +21,7 @@ permissions:
 
 env:
   S3_BUCKET: 'sdp-devops'
-  S3_UPLOAD_PATH: 'lambda/${{ github.ref_name == 'release/1.0.0' && 'release' || github.ref_name }}''
+  S3_UPLOAD_PATH: 'lambda/${{ github.ref_name == 'release/1.0.0' && 'release' || github.ref_name }}'
 
 
 jobs:
