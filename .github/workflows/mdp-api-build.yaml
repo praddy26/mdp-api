@@ -122,11 +122,11 @@ jobs:
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-        - name: Invoke Server Workflow 
-          uses: benc-uk/workflow-dispatch@v1
-          with:
-            workflow: MDP Lambda Deploy Worklfow
-            repo: mdp-api-deploy
-            token: ${{ secrets.ACTIONS_KEY }}
-            ref: refs/heads/${{ github.ref_name }}
+      - name: Invoke Server Workflow 
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: MDP Lambda Deploy Worklfow
+          repo: mdp-api-deploy
+          token: ${{ secrets.ACTIONS_KEY }}
+          ref: refs/heads/${{ github.ref_name }}
 
