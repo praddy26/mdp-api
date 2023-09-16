@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - develop
+      - release/1.0.0
     paths-ignore:
       - 'devops/datadog/**'
 
@@ -18,10 +20,8 @@ permissions:
   statuses: write
 
 env:
-  AWS_ROLE: arn:aws:iam::948583262870:role/edp-api-livedata-ecr-access-role
-  AWS_ACCT_ID: '948583262870'
-  AWS_REGION: us-west-2
-  ECR_REPOSITORY: mdp-api
+  S3_BUCKET: 'sdp-devops'
+  S3_UPLOAD_PATH: 'lambda/${{ github.ref_name == 'release/1.0.0' && 'release' || github.ref_name }}''
 
 
 jobs:
@@ -41,14 +41,9 @@ jobs:
 
       - name: Get Short SHA
         id: sha
-        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
-
-      - name: Get current workweek
-        uses: josStorer/get-current-time@v2.0.2
-        id: workweek
-        with:
-          format: YY[w]ww.d
-          utcOffset: "+08:00"
+        run: |
+          echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
+          echo $S3_BUCKET $S3_UPLOAD_PATH
       
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
@@ -76,8 +71,24 @@ jobs:
           # npm run build
           npm --version
 
-      # - name: Code Coverage
+      # - name: Run Code Coverage
       #   uses: 5monkeys/cobertura-action@master
+      #   if: success() || failure()
       #   with:
       #     path: reports/coverage/cobertura-coverage.xml
       #     minimum_coverage: 75
+
+      # - name: Run Test Report
+      #   uses: mikepenz/action-junit-report@v4
+      #   if: success() || failure()
+      #   with:
+      #     report_paths: 'reports/test/*.xml'
+
+      - name: Upload Artifacts to S3 Bucket
+        uses: shallwefootball/s3-upload-action@master
+        with:
+          aws_key_id: ${{ secrets.AWS_KEY_ID }}
+          aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          destination_dir: ${{env.S3_UPLOAD_PATH}}
+          source_dir: 'dist'
