@@ -1,4 +1,4 @@
-name: MDP Lambda BUild Worklfow
+name: MDP Lambda Build Worklfow
 
 on:
   push:
@@ -64,5 +64,6 @@ jobs:
       - name: NPM Install
         uses: actions/setup-node@v3
       - run: |
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-          npm install 
+          # echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          # npm install
+          npm --version 
