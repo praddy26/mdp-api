@@ -84,11 +84,11 @@ jobs:
       #   with:
       #     report_paths: 'reports/test/*.xml'
 
-      - name: Upload Artifacts to S3 Bucket
-        uses: shallwefootball/s3-upload-action@master
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          destination_dir: ${{env.S3_UPLOAD_PATH}}
-          source_dir: 'dist'
+      # - name: Upload Artifacts to S3 Bucket
+      #   uses: shallwefootball/s3-upload-action@master
+      #   with:
+      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
+      #     aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      #     aws_bucket: ${{ secrets.AWS_BUCKET }}
+      #     destination_dir: ${{env.S3_UPLOAD_PATH}}
+      #     source_dir: 'dist'
