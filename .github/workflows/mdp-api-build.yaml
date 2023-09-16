@@ -7,24 +7,7 @@ on:
       - develop
       - release/1.0.0
     paths-ignore:
-      - 'devops/datadog/**'
-
-  workflow_dispatch:
-     inputs:
-      mdpapi_deploy_workflow:
-        description: 'ًmdpapi workflow which will be triggered'
-        required: true
-        default: 'MDP Lambda Deploy Worklfow'
-
-      mdpapi_deploy_github_account:
-        description: 'GitHub Account Owner'
-        required: true
-        default: 'praddy26'
-
-      mdpapi_deploy_repo_github:
-        description: 'repo-name'
-        required: true
-        default: 'mdp-api-deploy' 
+      - 'devops/datadog/**' 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -129,4 +112,3 @@ jobs:
           repo: mdp-api-deploy
           token: ${{ secrets.ACTIONS_KEY }}
           ref: refs/heads/${{ github.ref_name }}
-
