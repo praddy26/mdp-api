@@ -19,12 +19,12 @@ on:
       mdpapi_deploy_github_account:
         description: 'GitHub Account Owner'
         required: true
-        default: ':userName'
+        default: 'praddy26'
 
       mdpapi_deploy_repo_github:
         description: 'repo-name'
         required: true
-        default: ':repoName' 
+        default: 'mdp-api-deploy ' 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -128,4 +128,3 @@ jobs:
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACTIONS_KEY }} \
           --data '{"event_type": "Trigger Workflow", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
-          
