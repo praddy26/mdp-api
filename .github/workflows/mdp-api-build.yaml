@@ -24,7 +24,7 @@ on:
       mdpapi_deploy_repo_github:
         description: 'repo-name'
         required: true
-        default: 'mdp-api-deploy ' 
+        default: 'mdp-api-deploy' 
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -124,7 +124,7 @@ jobs:
 
       - name: Trigger
         run: |
-          curl -X POST https://api.github.com/repos/:userName/:repoName/dispatches \
+          curl -X POST https://api.github.com/repos/praddy26/mdp-api-deploy/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.ACTIONS_KEY }} \
           --data '{"event_type": "Trigger Workflow", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
