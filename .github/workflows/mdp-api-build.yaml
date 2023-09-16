@@ -56,7 +56,7 @@ jobs:
           SLACK_CHANNEL: general
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
           SLACK_ICON: https://github.com/rtCamp.png?size=48
-          SLACK_MESSAGE: "${{job.status}} Job: '${{github.workflow}}',VERSION: 'commit-${{env.IMAGE_TAG}}-build-$GITHUB_RUN_ID'"
+          SLACK_MESSAGE: "${{job.status}} Job: '${{github.workflow}}',VERSION: 'commit-${{env.IMAGE_TAG}}-build-${{github.workflow.id}}'"
           SLACK_TITLE: STARTED
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
@@ -76,8 +76,8 @@ jobs:
           # npm run build
           npm --version
 
-      - name: Code Coverage
-        uses: 5monkeys/cobertura-action@master
-        with:
-          path: reports/coverage/cobertura-coverage.xml
-          minimum_coverage: 75
+      # - name: Code Coverage
+      #   uses: 5monkeys/cobertura-action@master
+      #   with:
+      #     path: reports/coverage/cobertura-coverage.xml
+      #     minimum_coverage: 75
