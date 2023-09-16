@@ -1,0 +1,62 @@
+name: Trunk Based Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'devops/datadog/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+  checks: read
+  statuses: write
+
+env:
+  AWS_ROLE: arn:aws:iam::948583262870:role/edp-api-livedata-ecr-access-role
+  AWS_ACCT_ID: '948583262870'
+  AWS_REGION: us-west-2
+  ECR_REPOSITORY: mdp-api
+
+jobs:
+
+  build:
+    name: Lambda Build
+    runs-on: ubuntu-latest
+    outputs:
+      docker-tag: ${{ env.IMAGE_TAG }}
+      workweek: ${{ steps.workweek.outputs.formattedTime }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get Short SHA
+        id: sha
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
+
+      - name: Get current workweek
+        uses: josStorer/get-current-time@v2.0.2
+        id: workweek
+        with:
+          format: YY[w]ww.d
+          utcOffset: "+08:00"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+      
+      - name: Print github repo
+        run: echo $GITHUB_REPOSITORY
+
+
+ 
