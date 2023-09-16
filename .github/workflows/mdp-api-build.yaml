@@ -23,7 +23,7 @@ env:
   AWS_REGION: us-west-2
   ECR_REPOSITORY: mdp-api
 
- strategy:
+strategy:
   matrix:
     node-version: [14.x, 16.x, 18.x, 20.x]
 
@@ -65,8 +65,4 @@ jobs:
         uses: actions/setup-node@v3
       - run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-          npm install
-
-
-
- 
+          npm install 
