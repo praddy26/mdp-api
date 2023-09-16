@@ -1,4 +1,4 @@
-name: MDP Lambda Worklfow
+name: MDP Lambda BUild Worklfow
 
 on:
   push:
@@ -57,10 +57,12 @@ jobs:
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: NPM Install
         uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          npm install
+
 
 
  
