@@ -58,7 +58,7 @@ jobs:
       - name: NPM Install
         run: |
           # echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-          # npm install
+          # npm install #
           npm --version
 
       - name: NPM Build
