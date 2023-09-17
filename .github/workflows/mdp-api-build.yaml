@@ -84,15 +84,19 @@ jobs:
       #   with:
       #     report_paths: 'reports/test/*.xml'
 
-      # - name: Upload Artifacts to S3 Bucket
-      #   uses: shallwefootball/s3-upload-action@master
-      #   if: github.event_name == 'push'
-      #   with:
-      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
-      #     aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-      #     aws_bucket: ${{ secrets.AWS_BUCKET }}
-      #     destination_dir: ${{env.S3_UPLOAD_PATH}}
-      #     source_dir: 'dist'
+
+      - name: Upload Artifacts to S3 Bucket
+        uses: jakejarvis/s3-sync-action@master
+        if: github.event_name == 'push'
+        with:
+          args: --metadata '{"commit-id":"${{ env.COMMIT_SHORT_SHA }}","workflow-build-number":"${{ github.run_id }}-${{ github.run_number }}"}'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ env.S3_BUCKET }}
+          AWS_REGION: 'us-west-2'
+          DEST_DIR: ${{ env.S3_UPLOAD_PATH }}
+          SOURCE_DIR: 'dist'     
 
       - name: Slack Notification for Success/Failure
         uses: rtCamp/action-slack-notify@v2
@@ -101,7 +105,7 @@ jobs:
           SLACK_CHANNEL: general
           SLACK_COLOR: ${{ job.status }}
           SLACK_ICON: ${{ env.SLACK_ICON }}
-          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
+          SLACK_MESSAGE: "Job: '${{ github.job }}', VERSION: 'commit-${{ env.COMMIT_SHORT_SHA }}-build-${{ github.run_id }}-${{ github.run_number }}'"
           SLACK_TITLE: ${{ job.status }}
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
