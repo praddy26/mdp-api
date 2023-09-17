@@ -1,11 +1,13 @@
 name: MDP Lambda Build Worklfow
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - develop
       - release/1.0.0
+    types:
+      - opened
     paths-ignore:
       - 'devops/datadog/**' 
 
