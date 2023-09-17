@@ -14,7 +14,6 @@ on:
     types:
       - opened
 
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,9 +28,7 @@ env:
   S3_BUCKET: sdp-devops
   S3_UPLOAD_PATH: lambda/${{ github.ref_name == 'release/1.0.0' && 'release' || github.ref_name }}
 
-
 jobs:
-
   build:
     name: Lambda Build
     runs-on: ubuntu-latest
