@@ -33,9 +33,6 @@ jobs:
   build:
     name: Lambda Build
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     env-branches: [main, develop, release/1.0.0]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -46,7 +43,7 @@ jobs:
       - name: Get Short SHA
         id: sha
         run: |
-          echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
+          echo "COMMIT_SHORT_SHA=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
           echo $S3_BUCKET $S3_UPLOAD_PATH
           echo ${{ github.event_name }}
       
@@ -57,7 +54,7 @@ jobs:
           SLACK_CHANNEL: general
           SLACK_COLOR: '#2E3B8B'
           SLACK_ICON: https://github.com/rtCamp.png?size=48
-          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.IMAGE_TAG}}-build-${{github.run_id}}-${{github.run_number}}'"
+          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
           SLACK_TITLE: Started
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
@@ -104,12 +101,12 @@ jobs:
           SLACK_CHANNEL: general
           SLACK_COLOR: ${{ job.status }}
           SLACK_ICON: https://github.com/rtCamp.png?size=48
-          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.IMAGE_TAG}}-build-${{github.run_id}}-${{github.run_number}}'"
+          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
           SLACK_TITLE: ${{ job.status }}
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Invoke Server Workflow 
+      - name: Trigger Deploy Workflow 
         uses: benc-uk/workflow-dispatch@v1
         if: github.event_name == 'push'
         with:
