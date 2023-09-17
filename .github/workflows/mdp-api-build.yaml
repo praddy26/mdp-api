@@ -1,6 +1,11 @@
 name: MDP Lambda Build Worklfow
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+      - release/1.0.0
   pull_request:
     branches:
       - main
@@ -8,8 +13,7 @@ on:
       - release/1.0.0
     types:
       - opened
-    paths-ignore:
-      - 'devops/datadog/**' 
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
