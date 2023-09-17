@@ -37,6 +37,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Setup Node Environment
+        uses: actions/setup-node@v3
+
       - name: Get Short SHA
         id: sha
         run: |
@@ -45,6 +48,7 @@ jobs:
       
       - name: Slack Notification for Start
         uses: rtCamp/action-slack-notify@v2
+        if: github.event.pull_request.merged == true
         env:
           SLACK_CHANNEL: general
           SLACK_COLOR: '#2E3B8B'
@@ -53,9 +57,6 @@ jobs:
           SLACK_TITLE: Started
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-
-      - name: Setup Node Environment
-        uses: actions/setup-node@v3
 
       - name: NPM Install
         run: |
@@ -92,9 +93,8 @@ jobs:
       #     source_dir: 'dist'
 
       - name: Slack Notification for Success/Failure
-        id: slack_post_notification
         uses: rtCamp/action-slack-notify@v2
-        if: always()
+        if: github.event.pull_request.merged == true && always()
         env:
           SLACK_CHANNEL: general
           SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
@@ -106,8 +106,9 @@ jobs:
 
       - name: Invoke Server Workflow 
         uses: benc-uk/workflow-dispatch@v1
+        if: github.event.pull_request.merged == true
         with:
           workflow: MDP Lambda Deploy Worklfow
           repo: praddy26/mdp-api-deploy
           token: ${{ secrets.ACTIONS_KEY }}
-          ref: refs/heads/${{ github.event.pull_request.head.ref }} #${{ github.ref_name }}
+          ref: refs/heads/${{ github.ref_name }}   # ${{ github.event.pull_request.head.ref }}
