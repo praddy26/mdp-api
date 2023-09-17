@@ -1,6 +1,11 @@
 name: MDP Lambda Build Worklfow
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+      - release/1.0.0
   pull_request:
     branches:
       - main
@@ -8,8 +13,7 @@ on:
       - release/1.0.0
     types:
       - opened
-    paths-ignore:
-      - 'devops/datadog/**' 
+      - synchronize
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,9 +29,7 @@ env:
   S3_BUCKET: sdp-devops
   S3_UPLOAD_PATH: lambda/${{ github.ref_name == 'release/1.0.0' && 'release' || github.ref_name }}
 
-
 jobs:
-
   build:
     name: Lambda Build
     runs-on: ubuntu-latest
@@ -35,30 +37,32 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Setup Node Environment
+        uses: actions/setup-node@v3
+
       - name: Get Short SHA
         id: sha
         run: |
-          echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
+          echo "COMMIT_SHORT_SHA=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
           echo $S3_BUCKET $S3_UPLOAD_PATH
+          echo ${{ github.event_name }}
       
       - name: Slack Notification for Start
         uses: rtCamp/action-slack-notify@v2
+        if: github.event_name == 'push'
         env:
           SLACK_CHANNEL: general
           SLACK_COLOR: '#2E3B8B'
           SLACK_ICON: https://github.com/rtCamp.png?size=48
-          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.IMAGE_TAG}}-build-${{github.run_id}}-${{github.run_number}}'"
+          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
           SLACK_TITLE: Started
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Setup Node Environment
-        uses: actions/setup-node@v3
-
       - name: NPM Install
         run: |
           # echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-          # npm install
+          # npm install ###
           npm --version
 
       - name: NPM Build
@@ -80,32 +84,33 @@ jobs:
       #   with:
       #     report_paths: 'reports/test/*.xml'
 
-      - name: Upload Artifacts to S3 Bucket
-        uses: shallwefootball/s3-upload-action@master
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          destination_dir: ${{env.S3_UPLOAD_PATH}}
-          source_dir: 'dist'
+      # - name: Upload Artifacts to S3 Bucket
+      #   uses: shallwefootball/s3-upload-action@master
+      #   if: github.event_name == 'push'
+      #   with:
+      #     aws_key_id: ${{ secrets.AWS_KEY_ID }}
+      #     aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+      #     aws_bucket: ${{ secrets.AWS_BUCKET }}
+      #     destination_dir: ${{env.S3_UPLOAD_PATH}}
+      #     source_dir: 'dist'
 
       - name: Slack Notification for Success/Failure
-        id: slack_post_notification
         uses: rtCamp/action-slack-notify@v2
-        if: always()
+        if: github.event_name == 'push' && always()
         env:
           SLACK_CHANNEL: general
-          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+          SLACK_COLOR: ${{ job.status }}
           SLACK_ICON: https://github.com/rtCamp.png?size=48
-          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.IMAGE_TAG}}-build-${{github.run_id}}-${{github.run_number}}'"
+          SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
           SLACK_TITLE: ${{ job.status }}
           SLACK_USERNAME: Github Actions
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
-      - name: Invoke Server Workflow 
+      - name: Trigger Deploy Workflow 
         uses: benc-uk/workflow-dispatch@v1
+        if: github.event_name == 'push'
         with:
           workflow: MDP Lambda Deploy Worklfow
           repo: praddy26/mdp-api-deploy
           token: ${{ secrets.ACTIONS_KEY }}
-          ref: refs/heads/${{ github.ref_name }}   # ${{ github.event.pull_request.head.ref }}
+          ref: refs/heads/${{ github.ref_name }}
