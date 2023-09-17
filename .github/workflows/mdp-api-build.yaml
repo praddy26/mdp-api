@@ -101,7 +101,6 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Invoke Server Workflow 
-        needs: slack_post_notification
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: MDP Lambda Deploy Worklfow
