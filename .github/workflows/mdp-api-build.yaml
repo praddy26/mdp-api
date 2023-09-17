@@ -33,9 +33,9 @@ jobs:
   build:
     name: Lambda Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        env-branches: [main, develop, release/1.0.0]
+    # strategy:
+    #   matrix:
+    #     env-branches: [main, develop, release/1.0.0]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
