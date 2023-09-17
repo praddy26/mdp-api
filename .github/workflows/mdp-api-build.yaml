@@ -48,7 +48,7 @@ jobs:
         run: |
           echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
           echo $S3_BUCKET $S3_UPLOAD_PATH
-          echo ${{ github }}
+          echo ${{ github.event_name }}
       
       - name: Slack Notification for Start
         uses: rtCamp/action-slack-notify@v2
