@@ -29,12 +29,6 @@ jobs:
   build:
     name: Lambda Build
     runs-on: ubuntu-latest
-    outputs:
-      docker-tag: ${{ env.IMAGE_TAG }}
-      workweek: ${{ steps.workweek.outputs.formattedTime }}
-    # strategy:
-    #   matrix:
-    #     node-version: [14.x, 16.x, 18.x, 20.x]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
