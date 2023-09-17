@@ -28,6 +28,7 @@ permissions:
 env:
   S3_BUCKET: sdp-devops
   S3_UPLOAD_PATH: lambda/${{ github.ref_name == 'release/1.0.0' && 'release' || github.ref_name }}
+  SLACK_ICON: https://images.crunchbase.com/image/upload/c_lpad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/v1455510953/wjkfamfxecnhwk3vs1ik.png
 
 jobs:
   build:
@@ -52,7 +53,7 @@ jobs:
         env:
           SLACK_CHANNEL: general
           SLACK_COLOR: '#2E3B8B'
-          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_ICON: ${{ env.SLACK_ICON }}
           SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
           SLACK_TITLE: Started
           SLACK_USERNAME: Github Actions
@@ -99,7 +100,7 @@ jobs:
         env:
           SLACK_CHANNEL: general
           SLACK_COLOR: ${{ job.status }}
-          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_ICON: ${{ env.SLACK_ICON }}
           SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
           SLACK_TITLE: ${{ job.status }}
           SLACK_USERNAME: Github Actions
