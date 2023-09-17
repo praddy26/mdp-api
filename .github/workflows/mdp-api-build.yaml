@@ -98,7 +98,7 @@ jobs:
 
       - name: Slack Notification for Success/Failure
         uses: rtCamp/action-slack-notify@v2
-        if: github.event.pull_request.merged == true && always()
+        if: github.event_name == 'push' && contains(fromJson('["master", "develop", "release/1.0.0"]'), github.ref_name) && always()
         env:
           SLACK_CHANNEL: general
           SLACK_COLOR: ${{ job.status }}
@@ -110,7 +110,7 @@ jobs:
 
       - name: Invoke Server Workflow 
         uses: benc-uk/workflow-dispatch@v1
-        if: github.event.pull_request.merged == true
+        if: github.event_name == 'push' && contains(fromJson('["master", "develop", "release/1.0.0"]'), github.ref_name)
         with:
           workflow: MDP Lambda Deploy Worklfow
           repo: praddy26/mdp-api-deploy
