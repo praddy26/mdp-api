@@ -58,7 +58,7 @@ jobs:
       - uses: kanga333/variable-mapper@master
         id: export
         with:
-          key: "ENV_MAP"
+          key: "ci"
           map: |
             {
               "ci": {
@@ -127,13 +127,12 @@ jobs:
                   }
               }
             }
-          export_to: env,log,output
+          export_to: env
 
       - name: Get Short SHA
         id: sha
         run: |
-          echo ${{ env.environment }}
-          echo ${{ steps.export.outputs.environment }}  
+          echo ${{ env.workspace }}
         
         # - name: Slack Notification for Start
         #   uses: rtCamp/action-slack-notify@v2
