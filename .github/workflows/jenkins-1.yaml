@@ -70,5 +70,5 @@ jobs:
 
       - name: Get Short SHA
         run: |
-          echo ${{ steps.sample.oututs.value }}"
+          echo ${{ steps.sample.outputs.value }}
 
