@@ -5,16 +5,24 @@ on:
     branches:
       - main
       - praddy
-      - develop
-      - release/1.0.0
-  # pull_request:
-  #   branches:
-  #     - main
-  #     - develop
-  #     - release/1.0.0
-  #   types:
-  #     - opened
-  #     - synchronize
+  workflow_dispatch:
+    inputs:
+      ENVIRONMENT:
+        description: Enter deployment environment
+        required: true
+        default: ''
+      VERSION_TEXT:
+        description: Enter version to deploy, only if you dont find in above dropdown else leave empty :p
+        required: true
+        default: ''
+      REGION:
+        description: Pick Region for Deployment
+        required: true
+        type: choice
+        options:
+          - All
+          - us-east-1
+          - us-west-2
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -54,154 +62,13 @@ jobs:
       - name: Setup Node Environment
         uses: actions/setup-node@v3
 
-      
-      - uses: kanga333/variable-mapper@master
-        id: export
+      - name: rad json
+        uses: sergeysova/jq-action@v2
+        id: sample
         with:
-          key: "ci"
-          map: |
-            {
-              "ci": {
-                  "accountID": "683423058194",
-                  "workspace": "ci",
-                  "ddEnv": "ci"
-              },
-              "dev": {
-                  "accountID": "683423058194",
-                  "workspace": "dev",
-                  "ddEnv": "devtest",
-                  "healthCheck": {
-                      "url": "https://dr-leaddriver-dvi1.drsvcnp.aws.dealertrack.com/api/healthcheck/",
-                      "name": {
-                          "useast1": "dr-leaddriver-dev-us-east-1",
-                          "uswest2": "dr-leaddriver-dev-us-west-2"
-                      }
-                  }
-              },
-              "qa": {
-                  "accountID": "683423058194",
-                  "workspace": "qa",
-                  "ddEnv": "qa1",
-                  "healthCheck": {
-                      "url": "https://dr-leaddriver-qa.drsvcnp.aws.dealertrack.com/api/healthcheck/",
-                      "name": {
-                          "useast1": "dr-leaddriver-qa-us-east-1",
-                          "uswest2": "dr-leaddriver-qa-us-west-2"
-                      }
-                  }
-              },
-              "uat": {
-                  "accountID": "136093617899",
-                  "workspace": "uat",
-                  "ddEnv": "uat1",
-                  "healthCheck": {
-                      "url": "https://dr-leaddriver.drsvcpp.aws.dealertrack.com/api/healthcheck/",
-                      "name": {
-                          "useast1": "dr-leaddriver-uat-us-east-1",
-                          "uswest2": "dr-leaddriver-uat-us-west-2"
-                      }
-                  }
-              },
-              "pa": {
-                  "accountID": "761907918238",
-                  "workspace": "pa",
-                  "ddEnv": "pa",
-                  "healthCheck": {
-                      "url": "https://dr-leaddriver-pa.drapi-pp.aws.dealertrack.com/api/healthcheck/",
-                      "name": {
-                          "useast1": "dr-leaddriver-pa-us-east-1",
-                          "uswest2": "dr-leaddriver-pa-us-west-2"
-                      }
-                  }
-              },
-              "prod": {
-                  "accountID": "706165609771",
-                  "workspace": "prod",
-                  "ddEnv": "prod",
-                  "healthCheck": {
-                      "url": "https://dr-leaddriver.drsvc.aws.dealertrack.com/api/healthcheck/",
-                      "name": {
-                          "useast1": "dr-leaddriver-prod-us-east-1",
-                          "uswest2": "dr-leaddriver-prod-us-west-2"
-                      }
-                  }
-              }
-            }
-          export_to: env
+          cmd: 'jq .dev.healthCheck.url sample.json -r'
 
       - name: Get Short SHA
-        id: sha
         run: |
-          echo ${{ env.workspace }}
-        
-        # - name: Slack Notification for Start
-        #   uses: rtCamp/action-slack-notify@v2
-        #   if: github.event_name == 'push'
-        #   env:
-        #     SLACK_CHANNEL: general
-        #     SLACK_COLOR: '#2E3B8B'
-        #     SLACK_ICON: ${{ env.SLACK_ICON }}
-        #     SLACK_MESSAGE: "Job: '${{github.job}}', VERSION: 'commit-${{env.COMMIT_SHORT_SHA}}-build-${{github.run_id}}-${{github.run_number}}'"
-        #     SLACK_TITLE: Started
-        #     SLACK_USERNAME: Github Actions
-        #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-  
-        # - name: NPM Install
-        #   run: |
-        #     # echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-        #     # npm install ###
-        #     npm --version
-  
-        # - name: NPM Build
-        #   run: |
-        #     # echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-        #     # npm run build
-        #     npm --version
+          echo ${{ steps.sample.oututs.value }}"
 
-      # - name: Run Code Coverage
-      #   uses: 5monkeys/cobertura-action@master
-      #   if: success() || failure()
-      #   with:
-      #     path: reports/coverage/cobertura-coverage.xml
-      #     minimum_coverage: 75
-
-      # - name: Run Test Report
-      #   uses: mikepenz/action-junit-report@v4
-      #   if: success() || failure()
-      #   with:
-      #     report_paths: 'reports/test/*.xml'
-
-
-      # - name: Upload Artifacts to S3 Bucket
-      #   uses: jakejarvis/s3-sync-action@master
-      #   if: github.event_name == 'push'
-      #   with:
-      #     args: --metadata '{"commit-id":"${{ env.COMMIT_SHORT_SHA }}","workflow-build-number":"${{ github.run_id }}-${{ github.run_number }}"}'
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     AWS_S3_BUCKET: ${{ env.S3_BUCKET }}
-      #     AWS_REGION: 'us-west-2'
-      #     DEST_DIR: ${{ env.S3_UPLOAD_PATH }}
-      #     SOURCE_DIR: 'dist'     
-
-      # - name: Slack Notification for Success/Failure
-      #   uses: rtCamp/action-slack-notify@v2
-      #   if: github.event_name == 'push' && always()
-      #   env:
-      #     SLACK_CHANNEL: general
-      #     SLACK_COLOR: ${{ job.status }}
-      #     SLACK_ICON: ${{ env.SLACK_ICON }}
-      #     SLACK_MESSAGE: "Job: '${{ github.job }}', VERSION: 'commit-${{ env.COMMIT_SHORT_SHA }}-build-${{ github.run_id }}-${{ github.run_number }}'"
-      #     SLACK_TITLE: ${{ job.status }}
-      #     SLACK_USERNAME: Github Actions
-      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-
-      # - name: Trigger Deploy Workflow 
-      #   uses: benc-uk/workflow-dispatch@v1
-      #   if: github.event_name == 'push'
-      #   with:
-      #     workflow: MDP Lambda Deploy Worklfow
-      #     repo: praddy26/mdp-api-deploy
-      #     token: ${{ secrets.ACTIONS_KEY }}
-      #     ref: refs/heads/${{ github.ref_name }}

@@ -1,0 +1,67 @@
+{
+    "ci": {
+        "accountID": "683423058194",
+        "workspace": "ci",
+        "ddEnv": "ci"
+    },
+    "dev": {
+        "accountID": "683423058194",
+        "workspace": "dev",
+        "ddEnv": "devtest",
+        "healthCheck": {
+            "url": "https://dr-leaddriver-dvi1.drsvcnp.aws.dealertrack.com/api/healthcheck/",
+            "name": {
+                "useast1": "dr-leaddriver-dev-us-east-1",
+                "uswest2": "dr-leaddriver-dev-us-west-2"
+            }
+        }
+    },
+    "qa": {
+        "accountID": "683423058194",
+        "workspace": "qa",
+        "ddEnv": "qa1",
+        "healthCheck": {
+            "url": "https://dr-leaddriver-qa.drsvcnp.aws.dealertrack.com/api/healthcheck/",
+            "name": {
+                "useast1": "dr-leaddriver-qa-us-east-1",
+                "uswest2": "dr-leaddriver-qa-us-west-2"
+            }
+        }
+    },
+    "uat": {
+        "accountID": "136093617899",
+        "workspace": "uat",
+        "ddEnv": "uat1",
+        "healthCheck": {
+            "url": "https://dr-leaddriver.drsvcpp.aws.dealertrack.com/api/healthcheck/",
+            "name": {
+                "useast1": "dr-leaddriver-uat-us-east-1",
+                "uswest2": "dr-leaddriver-uat-us-west-2"
+            }
+        }
+    },
+    "pa": {
+        "accountID": "761907918238",
+        "workspace": "pa",
+        "ddEnv": "pa",
+        "healthCheck": {
+            "url": "https://dr-leaddriver-pa.drapi-pp.aws.dealertrack.com/api/healthcheck/",
+            "name": {
+                "useast1": "dr-leaddriver-pa-us-east-1",
+                "uswest2": "dr-leaddriver-pa-us-west-2"
+            }
+        }
+    },
+    "prod": {
+        "accountID": "706165609771",
+        "workspace": "prod",
+        "ddEnv": "prod",
+        "healthCheck": {
+            "url": "https://dr-leaddriver.drsvc.aws.dealertrack.com/api/healthcheck/",
+            "name": {
+                "useast1": "dr-leaddriver-prod-us-east-1",
+                "uswest2": "dr-leaddriver-prod-us-west-2"
+            }
+        }
+    }
+}
